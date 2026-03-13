@@ -20,9 +20,23 @@ The framework models an organization of $n$ agents, each holding private beliefs
 
 ---
 
+
 ## The Mathematics
 
-### 1. LMSR — Logarithmic Market Scoring Rule
+### 1. Agent Type and Expected Utility
+
+---
+Each agent $i$ is characterized by a **type profile** $(\theta_i^A,\, \theta_i^B,\, p_i^A,\, p_i^B)$:
+
+| Parameter | Description |
+|---|---|
+| $\theta_i^A$ | Idiosyncratic monetary value if action $A$ succeeds |
+| $\theta_i^B$ | Idiosyncratic monetary value if action $B$ succeeds |
+| $p_i^A$ | Agent $i$'s private belief that $A$ succeeds |
+| $p_i^B$ | Agent $i$'s private belief that $B$ succeeds |
+
+---
+### 2. LMSR — Logarithmic Market Scoring Rule
 
 #### Cost Function
 
@@ -72,7 +86,7 @@ $$x = b \ln \left(\frac{e^{y/b} - 1 + p_i}{p_i}\right)$$
 
 ---
 
-### 2. VCGR — VCG-Inspired Reporting Mechanism
+### 3. VCGR — VCG-Inspired Reporting Mechanism
 
 Each agent $i$ reports a scalar $m_i \in \mathbb{R}$ representing their net preference for action $A$ over $B$.
 
@@ -98,37 +112,11 @@ where $c$ is the budget constraint and $n$ is the number of agents.
 
 $$\pi_i = t_i + r_i$$
 
-
----
-
-### 3. Agent Type and Expected Utility
-
-Each agent $i$ is characterized by a **type profile** $(\theta_i^A,\, \theta_i^B,\, p_i^A,\, p_i^B)$:
-
-| Parameter | Description |
-|---|---|
-| $\theta_i^A$ | Idiosyncratic monetary value if action $A$ succeeds |
-| $\theta_i^B$ | Idiosyncratic monetary value if action $B$ succeeds |
-| $p_i^A$ | Agent $i$'s private belief that $A$ succeeds |
-| $p_i^B$ | Agent $i$'s private belief that $B$ succeeds |
-
-The expected utility for each action is:
-
-$$EU_i^A = \theta_i^A \cdot p_i^A, \qquad EU_i^B = \theta_i^B \cdot p_i^B$$
-
-The VCG report collapses these into a single scalar:
-
-$$m_i = EU_i^A - EU_i^B$$
-
 ---
 
 ### 4. Decision Market (Conditional LMSR)
 
-A Decision Market maintains one independent LMSR market per candidate action. Agents trade in the market(s) they have beliefs about. The recommended action $a^*$ is:
-
-$$a^* = \arg\max_{a \in \mathcal{A}} \; P_{\text{success}}^a$$
-
-where $P_{\text{success}}^a$ is the market-implied probability of success *given* that action $a$ is taken.
+A Decision Market maintains one independent LMSR market per candidate action. Agents trade in the market(s) they have beliefs about. 
 
 ---
 
