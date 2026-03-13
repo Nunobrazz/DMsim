@@ -80,8 +80,6 @@ Each agent $i$ reports a scalar $m_i \in \mathbb{R}$ representing their net pref
 
 The action $a^* \in \{A, B\}$ is chosen based on the aggregate report:
 
-$$a^* = \begin{cases} A & \text{if } M = \displaystyle\sum_{i=1}^n m_i \geq 0 \\ B & \text{otherwise} \end{cases}$$
-
 #### Transfer Rule (Pivot Mechanism)
 
 Let $S_{-i} = M - m_i$ be the sum of all reports excluding agent $i$. The transfer to agent $i$ is:
