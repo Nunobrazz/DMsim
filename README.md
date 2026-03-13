@@ -98,13 +98,6 @@ where $c$ is the budget constraint and $n$ is the number of agents.
 
 $$\pi_i = t_i + r_i$$
 
-#### Optimal Report (Dominant Strategy)
-
-Given agent $i$'s type $$(\theta_i^A, \theta_i^B, p_i^A, p_i^B)$$, the dominant strategy report is:
-
-$$m_i^* = \frac{\theta_i^A - \theta_i^B}{2(1 - p_i^*)} + \frac{c}{c} \cdot \frac{p_i^A - p_i^B}{1 - p_i^*}$$
-
-where $p_i^* = p_i^A$ if $\theta_i^A > \theta_i^B$, and $p_i^* = p_i^B$ otherwise.
 
 ---
 
