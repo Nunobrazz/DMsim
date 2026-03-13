@@ -1,6 +1,6 @@
-# MBSR — Market-Based Social Choice & Resource Allocation
+# DMsim — Decision Making Simulator 
 
-A research-oriented Python framework for mechanism design and collective decision-making. It combines two foundational approaches — **Logarithmic Market Scoring Rule (LMSR)** prediction markets and a **VCG-inspired reporting mechanism (VCGR)** — into an integrated toolkit for organizations facing binary decisions under uncertainty.
+A Python simulator for comparing Decision Markets and VCG auctions as collective decision-making mechanisms, powered by LLM-generated agents.
 
 ---
 
