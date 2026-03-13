@@ -15,7 +15,7 @@ The framework models an organization of $n$ agents, each holding private beliefs
 | `organization.py` | Agent organization layer, bridging LMSR and VCGR |
 | `decision_market.py` | Multi-action conditional Decision Market built on LMSR |
 | `profile_generator.py` | LLM-powered diverse agent profile generator |
-| `run_simulation.py` | End-to-end VCG + LMSR simulation runner |
+| `run_vcgr_simulation.py` | End-to-end VCG simulation runner |
 | `run_decision_market_simulation.py` | Full Decision Market simulation runner |
 
 ---
@@ -141,138 +141,84 @@ where $P_{\text{success}}^a$ is the market-implied probability of success *given
 
 ---
 
-## Installation
+### 1. Environment Setup
 
 ```bash
+# Create a virtual environment
+python -m venv .venv
+
+# Activate the virtual environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install core dependencies
 pip install numpy
+
+# For LLM-powered profile generation, also install:
+pip install google-genai groq python-dotenv
 ```
 
-For LLM-powered profile generation (`profile_generator.py`), also install:
+### 2. API Keys
+
+Ensure either `GOOGLE_API_KEY` or `GROQ_API_KEY` is exported in your environment:
 
 ```bash
-pip install openai python-dotenv
+export GOOGLE_API_KEY="..."  # From https://aistudio.google.com
+# OR
+export GROQ_API_KEY="..."    # From https://console.groq.com
 ```
 
 ---
-
-## Quick Start
-
-### LMSR Prediction Market
-
-```python
-from mbsr import LMSR, buy_to_target_probability
-import numpy as np
-
-market = LMSR(event="Invest in Project X?", q=[0, 0], b=100, market_maker_fee=0)
-
-# Current prices (start at 50/50)
-print(market.get_current_price(0))  # 0.5
-
-# Buy shares and observe price movement
-market.buy_shares(outcome=0, shares=50)
-print(market.get_current_price(0))  # > 0.5
-
-# Move the market to exactly 75% probability for outcome 0
-shares_bought, cost = buy_to_target_probability(market, outcome=0, target_probability=0.75)
-```
-
-### VCGR Decision Mechanism
-
-```python
-from vcgr import DecisionMechanism
-
-reports = [10.0, -4.0, -8.0]
-game = DecisionMechanism(reports=reports, budget_constraint=5.0)
-
-print(game.get_allocation())     # True (A wins) or False (B wins)
-print(game.calculate_t())        # Transfer array for all agents
-game.display_summary(delta=5.0)  # Full resolution with payoffs
-```
-
-### Organization with LMSR + VCGR Integration
-
-```python
-from organization import Organization
-from vcgr import DecisionMechanism
-from mbsr import LMSR, buy_to_target_probability
-
-# [theta_A, theta_B, p_A, p_B] for each agent
-agent_data = [
-    [100.0,  50.0, 0.6, 0.3],
-    [-20.0, 150.0, 0.4, 0.5],
-    [ 10.0,  10.0, 0.3, 0.5],
-    [ 80.0, -10.0, 0.7, 0.4],
-]
-
-org = Organization(agent_data)
-
-# Step 1: Run VCG with private beliefs
-reports = org.get_vcg_reports()
-vcgr = DecisionMechanism(reports, budget_constraint=100.0)
-vcgr.display_summary(delta=1.0)
-
-# Step 2: Run LMSR to aggregate beliefs into consensus probabilities
-market = LMSR("Org Decision", [0, 0], b=100.0, market_maker_fee=0.0)
-for i in range(org.n):
-    buy_to_target_probability(market, outcome=0, target_probability=org.p_A[i])
-
-consensus_p_A = market.get_current_price(0)
-
-# Step 3: Re-run VCG with consensus beliefs
-reports_consensus = org.get_vcg_reports(p_A_override=consensus_p_A)
-vcgr_consensus = DecisionMechanism(reports_consensus, budget_constraint=100.0)
-vcgr_consensus.display_summary(delta=1.0)
-```
-
-### Decision Market (Multi-Action)
-
-```python
-from decision_market import DecisionMarket
-from mbsr import buy_to_target_probability
-
-dm = DecisionMarket(actions=["Invest in AI", "Invest in Biotech"], b=100.0)
-
-# Agents trade to express their conditional beliefs
-buy_to_target_probability(dm.get_market("Invest in AI"),     outcome=0, target_probability=0.80)
-buy_to_target_probability(dm.get_market("Invest in Biotech"), outcome=0, target_probability=0.70)
-
-dm.display_summary()
-print("Recommended action:", dm.make_decision())
-```
 
 ### Interactive CLI
 
 Both `LMSR` and `DecisionMarket` provide a live trading session:
 
 ```bash
-python mbsr.py          # Interactive single LMSR market
-python decision_market.py  # Interactive multi-action decision market
+python mbsr.py            # Interactive single LMSR market
+python decision_market.py # Interactive multi-action decision market
 ```
+
+### Running Simulations
+
+These scripts run full end-to-end simulations with LLM-generated agent profiles:
+
+```bash
+# Run the VCGR (VCG-inspired) simulation
+python run_vcgr_simulation.py
+
+# Run the Decision Market (Conditional LMSR) simulation
+python run_decision_market_simulation.py
+```
+
+### Customizing the Simulation
+
+You can easily modify the simulation parameters, decision context, and agent archetypes:
+
+1.  **Edit the Decision Context**: Open `profile_generator.py` and modify the `DAO_SCENARIO` string. This defines the overall situation, the actions available (Action A vs Action B), and the technical or financial stakes.
+2.  **Edit Agent Personas**: While the LLM generates specific agent details, you can influence their behavior by modifying the `_BATCH_PROMPT_TEMPLATE` in `profile_generator.py` or by adding specific persona requirements to the `DAO_SCENARIO` text.
+3.  **Adjust Simulation Scale**: In `run_vcgr_simulation.py` or `run_decision_market_simulation.py`, you can change the `n_agents` parameter in the `generate_profiles` call to simulate more or fewer participants.
 
 ---
 
-## Repository Structure
-
 ```
-mbsr/
-├── mbsr.py                          # LMSR market core
-├── vcgr.py                          # VCGR decision mechanism
-├── organization.py                  # Agent organization layer
-├── decision_market.py               # Multi-action conditional Decision Market
-├── profile_generator.py             # LLM-based agent profile generator
-├── run_simulation.py                # VCG + LMSR end-to-end simulation
-└── run_decision_market_simulation.py # Decision Market simulation
+DMsim/
+├── mbsr.py                           # LMSR market core
+├── vcgr.py                           # VCGR decision mechanism
+├── organization.py                   # Agent organization layer
+├── decision_market.py                # Multi-action conditional Decision Market
+├── profile_generator.py              # LLM-based agent profile generator
+├── run_vcgr_simulation.py             # VCGR end-to-end simulation
+└── run_decision_market_simulation.py  # Decision Market simulation
 ```
 
 ---
-
-## Dependencies
 
 | Package | Purpose |
 |---|---|
 | `numpy` | Array operations and vectorized math |
-| `openai` | LLM-powered profile generation (optional) |
-| `python-dotenv` | API key management via `.env` file (optional) |
+| `google-genai` | Google Gemini API client |
+| `groq` | Groq API client |
+| `python-dotenv` | API key management via `.env` file |
 
 ---
 

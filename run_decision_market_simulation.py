@@ -32,7 +32,7 @@ SUCCESS_OUTCOME = 0   # Outcome 0 = success, Outcome 1 = failure
 def run_decision_market_simulation():
     print(f"\n{Colors.BOLD}{Colors.CYAN}🚀 STARTING DECISION MARKET SIMULATION{Colors.END}")
 
-    # 1. Generate agent profiles via LLM
+    # Generate agent profiles via LLM
     try:
         profiles = generate_profiles(DAO_SCENARIO, n_agents=5)
     except Exception as e:
@@ -41,7 +41,7 @@ def run_decision_market_simulation():
 
     display_profiles(profiles)
 
-    # 2. Initialise Decision Market
+    # Initialise Decision Market
     dm = DecisionMarket(actions=ACTIONS, b=LIQUIDITY_B, n_outcomes=2)
     market_A = dm.get_market("Action A")
     market_B = dm.get_market("Action B")
@@ -55,12 +55,10 @@ def run_decision_market_simulation():
           f"A-SUCCESS={_initial_prices['Action A'][0]:.3f}  "
           f"B-SUCCESS={_initial_prices['Action B'][0]:.3f}{Colors.END}\n")
 
-    # 3. Each agent trades to push markets toward their private beliefs
+    # Each agent trades to push markets toward their private beliefs
     # Strategy:
     #   - If agent believes p_action > current market price for success → buy SUCCESS shares
     #   - If agent believes p_action < current market price for success → buy FAILURE shares
-    #   - Only trade in the market for the action they prefer (theta_X > 0) to avoid noise
-    #     from agents who dislike both actions equally.
 
     print(f"{Colors.BOLD}{'Agent':<28} {'Mkt':<6} {'Direction':<16} {'p_belief':>9} {'p_before':>9} {'p_after':>9}{Colors.END}")
     print(f"{'─'*90}")
@@ -68,7 +66,7 @@ def run_decision_market_simulation():
     for p in profiles:
         # --- Trade in Market A ---
         current_pA = market_A.get_current_price(SUCCESS_OUTCOME)
-        if abs(p.p_A - current_pA) > 0.01:  # Only trade if meaningfully different
+        if abs(p.p_A - current_pA) > 0.05:  # Only trade if meaningfully different
             if p.p_A > current_pA:
                 buy_to_target_probability(market_A, SUCCESS_OUTCOME, min(p.p_A, 0.99))
                 direction = f"{Colors.GREEN}BUY SUCCESS A{Colors.END}"
@@ -82,7 +80,7 @@ def run_decision_market_simulation():
 
         # --- Trade in Market B ---
         current_pB = market_B.get_current_price(SUCCESS_OUTCOME)
-        if abs(p.p_B - current_pB) > 0.01:
+        if abs(p.p_B - current_pB) > 0.05:
             if p.p_B > current_pB:
                 buy_to_target_probability(market_B, SUCCESS_OUTCOME, min(p.p_B, 0.99))
                 direction = f"{Colors.GREEN}BUY SUCCESS B{Colors.END}"
@@ -95,7 +93,7 @@ def run_decision_market_simulation():
             print(f"  {'':26} {'Mkt B':<6} {Colors.YELLOW}NO TRADE{Colors.END}            {p.p_B:>9.3f} {current_pB:>9.3f} {current_pB:>9.3f}")
         print()
 
-    # 4. Final market state and decision
+    # Final market state and decision
     final_prices = dm.get_all_prices()
     pA_final = final_prices["Action A"][SUCCESS_OUTCOME]
     pB_final = final_prices["Action B"][SUCCESS_OUTCOME]
@@ -111,7 +109,6 @@ def run_decision_market_simulation():
     print(f"{Colors.BOLD}{Colors.YELLOW}│ {decision_str:^46} │{Colors.END}")
     print(f"{Colors.BOLD}{Colors.YELLOW}└{'─'*48}┘{Colors.END}")
 
-    # 5. Show welfare at consensus probabilities
     print(f"\n{Colors.BLUE}Utilitarian Welfare at Consensus Probabilities:{Colors.END}")
     matrix = build_matrix(profiles)
     theta_A = matrix[:, 0]
