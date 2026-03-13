@@ -86,7 +86,12 @@ $$x = b \ln \left(\frac{e^{y/b} - 1 + p_i}{p_i}\right)$$
 
 ---
 
-### 3. VCGR — VCG-Inspired Reporting Mechanism
+### 3. Decision Market (Conditional LMSR)
+
+A Decision Market maintains one independent LMSR market per candidate action. Agents trade in the market(s) they have beliefs about. 
+
+---
+### 4. VCGR — VCG-Inspired Reporting Mechanism
 
 Each agent $i$ reports a scalar $m_i \in \mathbb{R}$ representing their net preference for action $A$ over $B$.
 
@@ -112,13 +117,6 @@ where $c$ is the budget constraint and $n$ is the number of agents.
 
 $$\pi_i = t_i + r_i$$
 
----
-
-### 4. Decision Market (Conditional LMSR)
-
-A Decision Market maintains one independent LMSR market per candidate action. Agents trade in the market(s) they have beliefs about. 
-
----
 
 ### 1. Environment Setup
 
