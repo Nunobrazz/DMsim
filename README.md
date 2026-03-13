@@ -62,13 +62,13 @@ $$\frac{e^{(q_i + \Delta q_i)/b}}{e^{(q_i + \Delta q_i)/b} + S_{-i}} = P_{\text{
 
 Solving for $\Delta q_i$:
 
-$$\boxed{\Delta q_i = b \ln\!\left(\frac{P_{\text{target}}}{1 - P_{\text{target}}} \cdot S_{-i}\right) - q_i}$$
+$$\boxed{\Delta q_i = b \ln \left(\frac{P_{\text{target}}}{1 - P_{\text{target}}} \cdot S_{-i}\right) - q_i}$$
 
 #### Shares from a Budget
 
 Given a fixed budget $y$ and current price $p_i$, the exact number of shares purchasable is:
 
-$$x = b \ln\!\left(\frac{e^{y/b} - 1 + p_i}{p_i}\right)$$
+$$x = b \ln \left(\frac{e^{y/b} - 1 + p_i}{p_i}\right)$$
 
 ---
 
