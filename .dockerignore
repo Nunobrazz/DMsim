@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+keys.env
+.DS_Store
+.git/
+.github/
+.pytest_cache/
+website/node_modules/
+website/_site/
+website/_jekyll-cache/
+website/.jekyll-cache/

@@ -1,0 +1,19 @@
+## Stage 1: Build Jekyll static site
+FROM ruby:3.3-slim AS build
+
+RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /site
+COPY website/Gemfile website/Gemfile.lock ./
+RUN bundle install
+
+COPY website/ .
+RUN bundle exec jekyll build
+
+## Stage 2: Serve with nginx
+FROM nginx:alpine
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /site/_site /usr/share/nginx/html
+
+EXPOSE 4000

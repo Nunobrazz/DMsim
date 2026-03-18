@@ -8,7 +8,9 @@ Wraps profile_generator.py to expose profile generation via HTTP.
 from dotenv import load_dotenv
 load_dotenv("keys.env")
 
-from fastapi import FastAPI, HTTPException
+import os
+import time
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
@@ -29,13 +31,31 @@ app = FastAPI(title="DMsim API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:4000",
-        "http://127.0.0.1:4000",
-    ],
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ── Daily Request Rate Limiter ───────────────────────────────────────────────
+
+DAILY_REQUEST_LIMIT = int(os.getenv("DAILY_REQUEST_LIMIT", "100"))
+
+_rate_state = {"count": 0, "reset_at": time.time() + 86400}
+
+
+def _check_daily_limit():
+    """Raise 429 if the daily LLM request budget is exhausted."""
+    now = time.time()
+    if now >= _rate_state["reset_at"]:
+        _rate_state["count"] = 0
+        _rate_state["reset_at"] = now + 86400
+    if _rate_state["count"] >= DAILY_REQUEST_LIMIT:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Daily request limit ({DAILY_REQUEST_LIMIT}) reached. Try again tomorrow.",
+        )
+    _rate_state["count"] += 1
 
 
 # ── Request / Response Models ────────────────────────────────────────────────
@@ -115,6 +135,7 @@ def get_defaults():
 @app.post("/api/generate-profiles", response_model=GenerateResponse)
 def generate(req: GenerateRequest):
     """Generate agent profiles using the LLM."""
+    _check_daily_limit()
     # Build the full context string combining scenario + actions + personas
     persona_block = "\n".join(
         f"  Agent {i+1}: {p.name}\n    {p.description}"

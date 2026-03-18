@@ -3,7 +3,7 @@
  * Step-by-step wizard for configuring and running decision market simulations.
  */
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "";
 
 // ── State ────────────────────────────────────────────────────────────────────
 
