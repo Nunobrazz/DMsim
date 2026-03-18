@@ -1,6 +1,6 @@
-# DMsim — Decision Making Simulator
+# DMsim — Decision Making Simulator 
 
-A research-oriented framework for mechanism design and collective decision-making. It combines **Logarithmic Market Scoring Rule (LMSR)** prediction markets and a **VCG-inspired reporting mechanism (VCGR)** with a web-based frontend for interactive simulation.
+A Python simulator for comparing Decision Markets and VCG auctions as collective decision-making mechanisms, powered by LLM-generated agents.
 
 ---
 
@@ -22,9 +22,23 @@ The framework models an organization of $n$ agents, each holding private beliefs
 
 ---
 
+
 ## The Mathematics
 
-### 1. LMSR — Logarithmic Market Scoring Rule
+### 1. Agent Type and Expected Utility
+
+---
+Each agent $i$ is characterized by a **type profile** $(\theta_i^A,\, \theta_i^B,\, p_i^A,\, p_i^B)$:
+
+| Parameter | Description |
+|---|---|
+| $\theta_i^A$ | Idiosyncratic monetary value if action $A$ succeeds |
+| $\theta_i^B$ | Idiosyncratic monetary value if action $B$ succeeds |
+| $p_i^A$ | Agent $i$'s private belief that $A$ succeeds |
+| $p_i^B$ | Agent $i$'s private belief that $B$ succeeds |
+
+---
+### 2. LMSR — Logarithmic Market Scoring Rule
 
 #### Cost Function
 
@@ -64,25 +78,28 @@ $$\frac{e^{(q_i + \Delta q_i)/b}}{e^{(q_i + \Delta q_i)/b} + S_{-i}} = P_{\text{
 
 Solving for $\Delta q_i$:
 
-$$\boxed{\Delta q_i = b \ln\!\left(\frac{P_{\text{target}}}{1 - P_{\text{target}}} \cdot S_{-i}\right) - q_i}$$
+$$\boxed{\Delta q_i = b \ln \left(\frac{P_{\text{target}}}{1 - P_{\text{target}}} \cdot S_{-i}\right) - q_i}$$
 
 #### Shares from a Budget
 
 Given a fixed budget $y$ and current price $p_i$, the exact number of shares purchasable is:
 
-$$x = b \ln\!\left(\frac{e^{y/b} - 1 + p_i}{p_i}\right)$$
+$$x = b \ln \left(\frac{e^{y/b} - 1 + p_i}{p_i}\right)$$
 
 ---
 
-### 2. VCGR — VCG-Inspired Reporting Mechanism
+### 3. Decision Market (Conditional LMSR)
+
+A Decision Market maintains one independent LMSR market per candidate action. Agents trade in the market(s) they have beliefs about. 
+
+---
+### 4. VCGR — VCG-Inspired Reporting Mechanism
 
 Each agent $i$ reports a scalar $m_i \in \mathbb{R}$ representing their net preference for action $A$ over $B$.
 
 #### Allocation Rule
 
 The action $a^* \in \{A, B\}$ is chosen based on the aggregate report:
-
-$$a^* = \begin{cases} A & \text{if } M = \displaystyle\sum_{i=1}^n m_i \geq 0 \\ B & \text{otherwise} \end{cases}$$
 
 #### Transfer Rule (Pivot Mechanism)
 
@@ -102,46 +119,6 @@ where $c$ is the budget constraint and $n$ is the number of agents.
 
 $$\pi_i = t_i + r_i$$
 
-#### Optimal Report (Dominant Strategy)
-
-Given agent $i$'s type $(\theta_i^A, \theta_i^B, p_i^A, p_i^B)$, the dominant strategy report is:
-
-$$m_i^* = \frac{\theta_i^A - \theta_i^B}{2(1 - p_i^*)} + \frac{c}{c} \cdot \frac{p_i^A - p_i^B}{1 - p_i^*}$$
-
-where $p_i^* = p_i^A$ if $\theta_i^A > \theta_i^B$, and $p_i^* = p_i^B$ otherwise.
-
----
-
-### 3. Agent Type and Expected Utility
-
-Each agent $i$ is characterized by a **type profile** $(\theta_i^A,\, \theta_i^B,\, p_i^A,\, p_i^B)$:
-
-| Parameter | Description |
-|---|---|
-| $\theta_i^A$ | Idiosyncratic monetary value if action $A$ succeeds |
-| $\theta_i^B$ | Idiosyncratic monetary value if action $B$ succeeds |
-| $p_i^A$ | Agent $i$'s private belief that $A$ succeeds |
-| $p_i^B$ | Agent $i$'s private belief that $B$ succeeds |
-
-The expected utility for each action is:
-
-$$EU_i^A = \theta_i^A \cdot p_i^A, \qquad EU_i^B = \theta_i^B \cdot p_i^B$$
-
-The VCG report collapses these into a single scalar:
-
-$$m_i = EU_i^A - EU_i^B$$
-
----
-
-### 4. Decision Market (Conditional LMSR)
-
-A Decision Market maintains one independent LMSR market per candidate action. Agents trade in the market(s) they have beliefs about. The recommended action $a^*$ is:
-
-$$a^* = \arg\max_{a \in \mathcal{A}} \; P_{\text{success}}^a$$
-
-where $P_{\text{success}}^a$ is the market-implied probability of success *given* that action $a$ is taken.
-
----
 
 ## Web Frontend
 
@@ -188,21 +165,18 @@ python -m venv .venv
 # Activate the virtual environment
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install core dependencies
-pip install numpy
-
-# For LLM-powered profile generation, also install:
-pip install google-genai groq python-dotenv
+# Install all dependencies
+pip install -r requirements.txt
 ```
 
 ### 2. API Keys
 
-Ensure either `GOOGLE_API_KEY` or `GROQ_API_KEY` is exported in your environment:
+Create a `keys.env` file in the project root:
 
-```bash
-export GOOGLE_API_KEY="..."  # From https://aistudio.google.com
+```
+GOOGLE_API_KEY=...   # From https://aistudio.google.com
 # OR
-export GROQ_API_KEY="..."    # From https://console.groq.com
+GROQ_API_KEY=...     # From https://console.groq.com
 ```
 
 ---
