@@ -1,0 +1,18 @@
+title: DMsim - Decision Making Simulator
+description: Simulate collective decision-making with AI-generated agent profiles
+baseurl: ""
+url: "http://localhost:4000"
+
+# Build settings
+theme: minima
+plugins:
+  - jekyll-feed
+
+exclude:
+  - node_modules/
+  - package.json
+  - package-lock.json
+  - jest.config.js
+  - __tests__/
+  - Gemfile
+  - Gemfile.lock

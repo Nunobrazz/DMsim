@@ -156,11 +156,10 @@ class LMSR:
         Returns:
         float: The final return of the sell transaction including the market maker fee.
         """
-        price = self.get_current_price(outcome)
-        cost = self.tx_cost(outcome, shares)
+        cost = self.tx_cost(outcome, -shares)
         self.shares[outcome] -= shares
         self.update_b()
-        return cost + self.get_market_maker_fee()
+        return cost - self.get_market_maker_fee()
 
     def get_market_total_revenue(self):
         """

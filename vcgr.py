@@ -127,8 +127,7 @@ class DecisionMechanism:
             
         # Handle the case where theta_A == theta_B (indifference)
         else:
-            # If the agent is perfectly indifferent, the first term evaluates to 0.
-            # We return 0.0 here, assuming no rational preference to report.
+            # If the agent is indifferent, the first term evaluates to 0.
             return 0.0
 
 

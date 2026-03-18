@@ -1,0 +1,155 @@
+---
+layout: default
+---
+
+<div class="app-container">
+  <header>
+    <h1>DMsim</h1>
+    <p>Decision Making Simulator &mdash; AI-powered agent profile generation</p>
+  </header>
+
+  <!-- Stepper -->
+  <nav class="stepper" id="stepper">
+    <div class="stepper-step active" data-step="1">
+      <div class="stepper-dot">1</div>
+      <span>Scenario</span>
+    </div>
+    <div class="stepper-line"></div>
+    <div class="stepper-step" data-step="2">
+      <div class="stepper-dot">2</div>
+      <span>Decision</span>
+    </div>
+    <div class="stepper-line"></div>
+    <div class="stepper-step" data-step="3">
+      <div class="stepper-dot">3</div>
+      <span>Agents</span>
+    </div>
+    <div class="stepper-line"></div>
+    <div class="stepper-step" data-step="4">
+      <div class="stepper-dot">4</div>
+      <span>Results</span>
+    </div>
+  </nav>
+
+  <!-- Step 1: Context / Scenario -->
+  <section class="step active" id="step-1">
+    <div class="panel">
+      <h2 class="panel-title">Define the Scenario</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+        Describe the situation and context in which the decision is being made.
+      </p>
+      <div class="form-group">
+        <label for="context-input">Scenario Context</label>
+        <textarea id="context-input" rows="6"
+          placeholder="e.g., A lending protocol DAO is voting on whether to approve $RISKY as collateral..."></textarea>
+      </div>
+    </div>
+    <div class="btn-row">
+      <div></div>
+      <button class="btn btn-primary" id="btn-to-step2">Next: Define Decision</button>
+    </div>
+  </section>
+
+  <!-- Step 2: Actions / Decision -->
+  <section class="step" id="step-2">
+    <div class="panel">
+      <h2 class="panel-title">Define the Decision</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+        Specify the two candidate actions the agents will vote on.
+      </p>
+      <div class="form-group">
+        <label for="action-a-input">Action A</label>
+        <textarea id="action-a-input" rows="3"
+          placeholder="e.g., Approve $RISKY as Collateral (LTV 65%)"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="action-b-input">Action B</label>
+        <textarea id="action-b-input" rows="3"
+          placeholder="e.g., Reject $RISKY as Collateral"></textarea>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="btn-back-to-1">Back</button>
+      <button class="btn btn-primary" id="btn-to-step3">Next: Define Agents</button>
+    </div>
+  </section>
+
+  <!-- Step 3: Personas -->
+  <section class="step" id="step-3">
+    <div class="panel">
+      <h2 class="panel-title">Define Agent Personalities</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+        Describe each agent's role, holdings, biases, and perspective. The LLM will generate
+        calibrated preferences and beliefs for each.
+      </p>
+      <div class="persona-list" id="persona-list">
+        <!-- Personas injected by JS -->
+      </div>
+      <button class="add-persona-btn" id="add-persona-btn">+ Add Agent</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="btn-back-to-2">Back</button>
+      <button class="btn btn-primary" id="btn-generate">Generate Profiles</button>
+    </div>
+  </section>
+
+  <!-- Step 4: Results -->
+  <section class="step" id="step-4">
+    <details class="context-summary" id="context-summary">
+      <summary class="context-summary-toggle">Scenario &amp; Proposals</summary>
+      <div class="context-summary-body">
+        <div class="context-summary-section">
+          <span class="context-summary-label">Scenario</span>
+          <p id="summary-context"></p>
+        </div>
+        <div class="context-summary-actions">
+          <div class="context-summary-section">
+            <span class="context-summary-label">Action A</span>
+            <p id="summary-action-a"></p>
+          </div>
+          <div class="context-summary-section">
+            <span class="context-summary-label">Action B</span>
+            <p id="summary-action-b"></p>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <div id="results-content">
+      <!-- Loading / Error / Results injected by JS -->
+    </div>
+
+    <!-- VCGR Simulation Panel -->
+    <div class="panel vcgr-panel" id="vcgr-panel" style="display:none;">
+      <h2 class="panel-title">Test VCGR Mechanism</h2>
+      <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem;">
+        Agents report strategically (worst-case). The mechanism remains incentive-compatible.
+      </p>
+      <div class="vcgr-controls">
+        <div class="form-group vcgr-input-group">
+          <label for="vcgr-budget">
+            Budget Constraint (c)
+            <span class="info-hint" data-tip="Max subsidy the DAO allocates per decision. Higher c amplifies the belief signal over preference noise.">?</span>
+          </label>
+          <input type="text" inputmode="decimal" id="vcgr-budget" value="50">
+        </div>
+        <div class="form-group vcgr-input-group">
+          <label for="vcgr-delta">
+            Outcome Metric (&Delta;)
+            <span class="info-hint" data-tip="Realized outcome after the decision. if Δ > 0 KPIs improved (experts rewarded), if Δ < 0 KPIs worsened.">?</span>
+          </label>
+          <input type="text" inputmode="decimal" id="vcgr-delta" value="1">
+        </div>
+        <button class="btn btn-primary" id="btn-vcgr-run">Run VCGR</button>
+      </div>
+      <div id="vcgr-results">
+        <!-- VCGR results injected by JS -->
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="btn-back-to-3">Back to Agents</button>
+      <button class="btn btn-primary" id="btn-restart">Start New Simulation</button>
+    </div>
+  </section>
+</div>

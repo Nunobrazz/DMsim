@@ -1,6 +1,6 @@
-# MBSR — Market-Based Social Choice & Resource Allocation
+# DMsim — Decision Making Simulator
 
-A research-oriented Python framework for mechanism design and collective decision-making. It combines two foundational approaches — **Logarithmic Market Scoring Rule (LMSR)** prediction markets and a **VCG-inspired reporting mechanism (VCGR)** — into an integrated toolkit for organizations facing binary decisions under uncertainty.
+A research-oriented framework for mechanism design and collective decision-making. It combines **Logarithmic Market Scoring Rule (LMSR)** prediction markets and a **VCG-inspired reporting mechanism (VCGR)** with a web-based frontend for interactive simulation.
 
 ---
 
@@ -15,6 +15,8 @@ The framework models an organization of $n$ agents, each holding private beliefs
 | `organization.py` | Agent organization layer, bridging LMSR and VCGR |
 | `decision_market.py` | Multi-action conditional Decision Market built on LMSR |
 | `profile_generator.py` | LLM-powered diverse agent profile generator |
+| `api.py` | FastAPI backend exposing profile generation and VCGR simulation |
+| `website/` | Jekyll + vanilla JS web UI (4-step wizard + VCGR testing) |
 | `run_vcgr_simulation.py` | End-to-end VCG simulation runner |
 | `run_decision_market_simulation.py` | Full Decision Market simulation runner |
 
@@ -141,6 +143,42 @@ where $P_{\text{success}}^a$ is the market-implied probability of success *given
 
 ---
 
+## Web Frontend
+
+A 4-step wizard UI for configuring scenarios, generating LLM-powered agent profiles, and testing the VCGR mechanism interactively.
+
+### Running
+
+```bash
+# 1. Install Python dependencies (from project root)
+pip install -r requirements.txt
+
+# 2. Start the API backend (from project root)
+uvicorn api:app --reload --port 8000
+
+# 3. Start the Jekyll frontend (in a separate terminal)
+cd website
+bundle install
+bundle exec jekyll serve   # Serves at http://localhost:4000
+```
+
+### Frontend Features
+
+- **Step 1–3**: Define scenario context, two candidate actions, and agent personas
+- **Step 4**: View LLM-generated agent profiles (θ_A, θ_B, p_A, p_B) with editable values
+- **VCGR Testing**: Run the VCGR mechanism with configurable budget and outcome metric (Δ), using the generated (or edited) profiles
+- **Context Summary**: Collapsible panel showing the scenario and proposals for reference
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/defaults` | Returns the default scenario, actions, and personas |
+| `POST` | `/api/generate-profiles` | Generates agent profiles via LLM |
+| `POST` | `/api/vcgr-simulate` | Runs VCGR mechanism with optimal strategic reports |
+
+---
+
 ### 1. Environment Setup
 
 ```bash
@@ -202,13 +240,24 @@ You can easily modify the simulation parameters, decision context, and agent arc
 
 ```
 DMsim/
-├── mbsr.py                           # LMSR market core
-├── vcgr.py                           # VCGR decision mechanism
-├── organization.py                   # Agent organization layer
-├── decision_market.py                # Multi-action conditional Decision Market
-├── profile_generator.py              # LLM-based agent profile generator
+├── api.py                             # FastAPI backend
+├── vcgr.py                            # VCGR decision mechanism
+├── profile_generator.py               # LLM-based agent profile generator
+├── mbsr.py                            # LMSR market core
+├── organization.py                    # Agent organization layer
+├── decision_market.py                 # Multi-action conditional Decision Market
 ├── run_vcgr_simulation.py             # VCGR end-to-end simulation
-└── run_decision_market_simulation.py  # Decision Market simulation
+├── run_decision_market_simulation.py  # Decision Market simulation
+├── requirements.txt                   # Python dependencies
+├── keys.env                           # API keys (not committed)
+└── website/                           # Jekyll frontend (static UI only)
+    ├── index.html
+    ├── _layouts/default.html
+    ├── _config.yml
+    ├── Gemfile
+    └── assets/
+        ├── js/app.js
+        └── css/style.css
 ```
 
 ---
@@ -219,6 +268,9 @@ DMsim/
 | `google-genai` | Google Gemini API client |
 | `groq` | Groq API client |
 | `python-dotenv` | API key management via `.env` file |
+| `fastapi` | API backend framework |
+| `uvicorn` | ASGI server for FastAPI |
+| `pydantic` | Request/response validation |
 
 ---
 

@@ -38,22 +38,26 @@ except ImportError:
 # ── Scenario (edit this variable to change the decision) ──────────────────────
 
 DAO_SCENARIO = """
-A lending protocol DAO is voting on whether to approve $RISKY as a valid collateral asset.
+A lending protocol DAO must allocate its $2M growth budget for the next 12 months.
+The council must choose between two competing treasury strategies.
 
-  Action A: Approve $RISKY as Collateral (LTV 65%)
-    - $RISKY is a low-cap governance token with $4M market cap, high volatility (90-day vol: 180%),
-      and thin liquidity (~$200k daily volume)
-    - In a stress scenario, the oracle can be manipulated and a cascade liquidation could
-      leave the protocol insolvent, exposing depositors to losses
-    - Several council members personally hold large quantities of $RISKY purchased at low prices;
-      approval would dramatically increase the token's utility and price
-    - Risk team's assessment: 30% probability of a severe bad-debt event within 12 months
+  Action A: Aggressive Expansion — Launch $RISKY Collateral Market + Liquidity Mining
+    - Onboard $RISKY (low-cap governance token, $4M market cap, 180% 90-day vol) as collateral at LTV 65%
+    - Deploy $1.4M in liquidity mining rewards to bootstrap the new market
+    - Reserve $600k for bad-debt coverage
+    - Projected upside: 3x TVL growth to $255M if $RISKY market succeeds, protocol revenue jumps to $960k/month
+    - Risk: oracle manipulation and cascade liquidation could cause insolvency;
+      risk team estimates 30% probability of a severe bad-debt event within 12 months
+    - Council members collectively hold ~8M $RISKY tokens (~$3M); success would 3-5x their positions
 
-  Action B: Reject $RISKY as Collateral
-    - No protocol risk added; existing USDC/ETH/wBTC collateral framework remains intact
-    - Depositors (lenders) remain fully protected from oracle manipulation risk
-    - $RISKY holders on the council gain no financial benefit; their bags do not pump
-    - Risk team's assessment: 99% operational success, zero systemic risk
+  Action B: Conservative Growth — Deepen Blue-Chip Markets + Build Insurance Fund
+    - Add no new collateral types; focus on deepening ETH/wBTC/USDC markets
+    - Deploy $800k in targeted incentives for large institutional depositors
+    - Allocate $1.2M to a protocol insurance fund (bringing total reserves to $2.1M)
+    - Projected upside: 40% TVL growth to $119M, protocol revenue rises to $450k/month
+    - Risk: slower growth may lose market share to competitors;
+      risk team estimates 95% probability of meeting targets, near-zero systemic risk
+    - No direct financial benefit to $RISKY holders on the council
 
 Protocol Stats:
   Total Value Locked: $85M | Bad debt reserve: $900k
@@ -64,37 +68,38 @@ Protocol Stats:
 
 # ── Agent persona definitions ─────────────────────────────────────────────────
 # Each agent has token holdings, epistemic priors, and a personality.
-# NOTE: conflict of interest is a key dynamic — some agents benefit personally from Action A.
+# NOTE: conflict of interest is a key dynamic — some agents benefit personally from the aggressive strategy.
 
 DEFAULT_PERSONAS = [
     ("Conflicted Council Member",
      "You sit on the lending DAO council and personally hold 2.5M $RISKY tokens bought at $0.04. "
-     "Approval would 3-5x your position overnight as it bootstraps real utility. "
-     "You genuinely believe the risk team is being overly conservative and privately estimate "
-     "a bad-debt event at only 10%. You are rationalizing hard."),
+     "The aggressive expansion strategy (Action A) would bootstrap real utility for $RISKY and 3-5x "
+     "your position. You genuinely believe the risk team is overly conservative and privately "
+     "estimate a bad-debt event at only 10%. You see the conservative path as a missed opportunity."),
 
     ("Large Depositor (Lender)",
-     "You have $1.2M in USDC deposited in the protocol earning 4.8% APY. "
-     "You have zero $RISKY exposure. You've read the risk team's report carefully and "
-     "you trust their 30% bad-debt probability estimate. "
-     "An insolvency would wipe out a large chunk of your savings."),
+     "You have $1.2M in USDC deposited in the protocol earning 4.8% APY. You have zero $RISKY exposure. "
+     "You've read the risk team's report and trust their 30% bad-debt estimate for the aggressive path. "
+     "You see the insurance fund in Action B as directly protecting your capital. "
+     "You acknowledge Action A's higher revenue could raise your yield, but insolvency risk terrifies you."),
 
     ("Neutral Risk Analyst",
      "You are a third-party auditor with no position in $RISKY and no deposits in this protocol. "
-     "You've studied the oracle architecture and 90-day volatility. "
-     "You estimate the bad-debt probability closer to 40% given current liquidity depth. "
-     "You believe the LTV of 65% is dangerously high for an asset of this profile."),
+     "You've studied the oracle architecture and 90-day volatility. You estimate the bad-debt probability "
+     "closer to 40% for Action A given current liquidity depth. You see Action B as financially sound "
+     "but worry the protocol may lose competitive ground without bolder moves."),
 
     ("Small $RISKY Retail Holder",
-     "You hold 15,000 $RISKY tokens bought at $0.25. You follow the project on Twitter "
-     "and believe in its long-term roadmap. You think approval pumps the price by 50%+ "
-     "and dismisses the risk team's report as FUD. You put the bad-debt probability at 5%."),
+     "You hold 15,000 $RISKY tokens bought at $0.25. You follow the project on Twitter and believe in "
+     "its long-term roadmap. The aggressive strategy would pump $RISKY's price by 50%+. "
+     "You think the risk team's report is FUD and put the bad-debt probability at 5%. "
+     "You see Action B as the boring choice that leaves the protocol stagnating."),
 
     ("Protocol Insurance Fund Manager",
-     "You manage the $900k bad-debt reserve. You are acutely aware that a single insolvency "
-     "event from a manipulated oracle could exceed the entire reserve. "
-     "You hold no $RISKY. Your mandate is solvency-first; you fully trust the 30% estimate "
-     "and believe even that may be understated given correlation risk."),
+     "You manage the $900k bad-debt reserve. A single insolvency event from Action A could exceed "
+     "the entire reserve. You hold no $RISKY. Action B would more than double your reserve to $2.1M, "
+     "giving the protocol a real safety net for the first time. You fully trust the 30% bad-debt estimate "
+     "for Action A and believe even that may be understated given correlation risk."),
 ]
 
 
