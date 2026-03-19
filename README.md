@@ -136,7 +136,7 @@ uvicorn api:app --reload --port 8000
 # 3. Start the Jekyll frontend (in a separate terminal)
 cd website
 bundle install
-bundle exec jekyll serve   # Serves at http://localhost:4000
+bundle exec jekyll serve   # Serves at http://localhost:3001
 ```
 
 ### Frontend Features

@@ -292,25 +292,25 @@ class TestGenerateErrors:
 # ── CORS ─────────────────────────────────────────────────────────────────────
 
 class TestCORS:
-    def test_cors_allows_localhost_4000(self):
+    def test_cors_allows_localhost_3001(self):
         resp = client.options(
             "/api/defaults",
             headers={
-                "Origin": "http://localhost:4000",
+                "Origin": "http://localhost:3001",
                 "Access-Control-Request-Method": "GET",
             },
         )
-        assert resp.headers.get("access-control-allow-origin") == "http://localhost:4000"
+        assert resp.headers.get("access-control-allow-origin") == "http://localhost:3001"
 
-    def test_cors_allows_127_0_0_1_4000(self):
+    def test_cors_allows_127_0_0_1_3001(self):
         resp = client.options(
             "/api/defaults",
             headers={
-                "Origin": "http://127.0.0.1:4000",
+                "Origin": "http://127.0.0.1:3001",
                 "Access-Control-Request-Method": "GET",
             },
         )
-        assert resp.headers.get("access-control-allow-origin") == "http://127.0.0.1:4000"
+        assert resp.headers.get("access-control-allow-origin") == "http://127.0.0.1:3001"
 
     def test_cors_rejects_unknown_origin(self):
         resp = client.options(
