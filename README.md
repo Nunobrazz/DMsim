@@ -1,6 +1,6 @@
 # DMsim — Decision Making Simulator 
 
-A Python simulator for comparing Decision Markets and VCG auctions as collective decision-making mechanisms, powered by LLM-generated agents.
+A Python simulator for comparing Decision Markets and VCG transfers as collective decision-making mechanisms, powered by LLM-generated agents.
 
 ---
 
